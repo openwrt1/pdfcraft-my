@@ -80,6 +80,10 @@ jobs:
           tccli lighthouse CreateFirewallRules \
             --InstanceId "${{ secrets.TENCENT_INSTANCE_ID }}" \
             --FirewallRules "$FIREWALL_RULES"
+            
+          # 2. 添加到主机安全(CWP)异地登录白名单，防止报警
+          tccli cwp AddLoginWhiteLists \
+            --HostLoginWhiteObj '{"SrcIp":"'"$RUNNER_IP"'","UserName":"ubuntu","IsGlobal":1,"Remark":"github-actions"}' || true
 
       - name: Deploy to Tencent Cloud via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -91,6 +95,7 @@ jobs:
           host: ${{ secrets.TENCENT_HOST }}
           username: ubuntu
           key: ${{ secrets.TENCENT_SSH_KEY }}
+          command_timeout: 30m
           envs: GH_TOKEN,USERNAME,IMAGE
           script: |
             cd /home/ubuntu/
@@ -118,3 +123,11 @@ jobs:
           tccli lighthouse DeleteFirewallRules \
             --InstanceId "${{ secrets.TENCENT_INSTANCE_ID }}" \
             --FirewallRules "$FIREWALL_RULES"
+            
+          # 2. 从主机安全(CWP)白名单中移除该 IP
+          echo "Cleaning up CWP whitelist..."
+          CWP_RES=$(tccli cwp DescribeLoginWhiteList --Filters '[{"Name":"Ip","Values":["'"$RUNNER_IP"'"]}]' || echo '{}')
+          WHITE_ID=$(echo "$CWP_RES" | jq -r '.List[0].Id // empty')
+          if [ -n "$WHITE_ID" ]; then
+            tccli cwp DeleteLoginWhiteLists --Ids '['"$WHITE_ID"']' || true
+          fi
