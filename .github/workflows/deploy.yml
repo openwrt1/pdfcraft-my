@@ -85,23 +85,37 @@ jobs:
           tccli cwp AddLoginWhiteLists \
             --HostLoginWhiteObj '{"SrcIp":"'"$RUNNER_IP"'","UserName":"ubuntu","IsGlobal":1,"Remark":"github-actions"}' || true
 
-      - name: Deploy to Tencent Cloud via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package Docker image to Tar (On GitHub Runner)
+        run: |
+          # 在 Github 的海外服务器上拉取镜像（极快）并打包成 tar 文件
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u "${{ github.actor }}" --password-stdin
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
+          docker save ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest -o pdfcraft-image.tar
+
+      - name: Transfer Image to Tencent Cloud via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.TENCENT_HOST }}
           username: ubuntu
           key: ${{ secrets.TENCENT_SSH_KEY }}
-          command_timeout: 10m
-          envs: IMAGE, GITHUB_TOKEN
+          source: "pdfcraft-image.tar"
+          target: "/home/ubuntu/"
+
+      - name: Deploy to Tencent Cloud via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
+        with:
+          host: ${{ secrets.TENCENT_HOST }}
+          username: ubuntu
+          key: ${{ secrets.TENCENT_SSH_KEY }}
+          command_timeout: 30m
+          envs: IMAGE
           script: |
-            # 登录 GitHub 镜像库
-            echo "$GITHUB_TOKEN" | sudo docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+            cd /home/ubuntu/
             
-            # 直接利用本机的代理拉取镜像（利用缓存，速度飞快！）
-            sudo docker pull $IMAGE
+            # 直接从刚才 SCP 传过来的文件加载镜像，彻底告别拉取卡死的问题！
+            sudo docker load -i pdfcraft-image.tar
             
             # 停止并清理掉正在运行的旧容器
             sudo docker stop pdfcraft || true
@@ -110,6 +124,8 @@ jobs:
             # 运行新容器，暴露在 8080 端口
             sudo docker run -d -p 8080:80 --name pdfcraft --restart always $IMAGE
             
+            # 清除安装包和旧版本的悬空镜像，释放服务器磁盘空间
+            rm pdfcraft-image.tar
             sudo docker image prune -f
 
       - name: Remove IP from Tencent Cloud Security Group
