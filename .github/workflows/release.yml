@@ -13,6 +13,8 @@ on:
     #   - 'src/**'
     #   - 'public/**'
     #   - 'package.json'
+  # 允许手动在 GitHub 网页上点击触发
+  workflow_dispatch:
 
 # Prevent concurrent builds
 concurrency:
