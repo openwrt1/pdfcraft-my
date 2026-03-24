@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { Viewport } from 'next';
 import '@/app/globals.css';
 
 export const metadata: Metadata = {
@@ -9,6 +10,14 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // 禁用双指缩放，体现原生 App 质感
+  themeColor: '#ffffff', // 可以根据你的项目主色调进行修改
 };
 
 // Root layout - provides the basic HTML structure

@@ -18,11 +18,11 @@ export default function RootPage() {
       if ((locales as readonly string[]).includes(primaryLang)) {
         router.replace(`/${primaryLang}`);
       } else {
-        router.replace(`/${defaultLocale}`);
+        router.replace(`/zh`);
       }
     } catch (error) {
       // Fallback to default locale if anything goes wrong
-      router.replace(`/${defaultLocale}`);
+      router.replace(`/zh`);
     }
   }, [router]);
 

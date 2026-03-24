@@ -1,0 +1,103 @@
+/* Mobile-specific adjustments for PDF.js viewer */
+@media (max-width: 1024px) {
+  /* Ensure viewer container fills viewport on mobile */
+  html, body {
+    height: 100%;
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  #outerContainer {
+    height: 100vh !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #mainContainer {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #viewerContainer {
+    position: relative !important;
+    top: 0 !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    background-color: transparent !important;
+  }
+
+  /* Toolbar: larger touch targets */
+  .toolbar {
+    height: 56px !important;
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    align-items: center !important;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.12) !important;
+  }
+
+  .toolbar button,
+  .toolbar .toolbarButton {
+    padding: 10px 12px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    font-size: 14px !important;
+  }
+
+  /* Reduce page margins and allow full width */
+  .page {
+    margin: 6px auto !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+    max-width: 100% !important;
+  }
+
+  /* Hide less useful sidebar controls by default on small screens */
+  #sidebarContainer {
+    display: none !important;
+  }
+
+  /* Dialogs become bottom sheets */
+  .dialog,
+  .commentPopup {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-height: 80vh !important;
+    border-radius: 12px 12px 0 0 !important;
+    overflow: auto !important;
+  }
+
+  /* Allow icon-only toolbar on very small widths */
+  @media (max-width: 640px) {
+    .toolbar span:not(.toolbarIcon),
+    .toolbar .toolbarLabel {
+      display: none !important;
+    }
+
+    .toolbar {
+      justify-content: space-between;
+    }
+
+    /* Make viewer padding smaller */
+    #viewer {
+      padding-top: 8px !important;
+    }
+  }
+}
+
+/* Touch action tweaks for mobile gestures */
+@media (pointer: coarse) {
+  .page,
+  #viewer {
+    touch-action: pan-y pinch-zoom; /* allow vertical scroll and pinch zoom */
+  }
+  /* Prevent unexpected double-tap zooming where appropriate */
+  body {
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+  }
+}

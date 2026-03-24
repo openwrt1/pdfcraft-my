@@ -2,11 +2,12 @@
 <html dir="ltr" mozdisallowselectionprint>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <meta name="google" content="notranslate">
-  <title>PDF Signer - Bento PDF</title>
+    <title>PDF 签署器 - Bento PDF</title>
   <link rel="stylesheet" href="pdf_viewer.css">
   <link rel="stylesheet" href="viewer.css">
+  <link rel="stylesheet" href="mobile.css">
   <style>
     body {
       margin: 0;
@@ -143,21 +144,21 @@
 </head>
 <body>
   <div class="toolbar">
-    <button id="previousPage" title="Previous Page">‹</button>
+    <button id="previousPage" title="上一页">‹</button>
     <input type="number" id="pageNumber" min="1" value="1">
     <span class="page-info">/ <span id="numPages">--</span></span>
-    <button id="nextPage" title="Next Page">›</button>
+    <button id="nextPage" title="下一页">›</button>
     
     <div class="spacer"></div>
     
     <!-- Annotation Editor Tools -->
     <div class="toolbar-separator"></div>
-    <button id="editorInk" class="editor-button" title="Draw">
+    <button id="editorInk" class="editor-button" title="绘制">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
         <path d="M13.5 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h11zm-11 4a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-11zm0 4a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5h-11z"/>
       </svg>
     </button>
-    <button id="editorFreeText" class="editor-button" title="Add Text">
+    <button id="editorFreeText" class="editor-button" title="添加文本">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
         <path d="M5 0v3H0v10h16V3h-5V0H5zm9 12H2V4h12v8z"/>
         <text x="5" y="10" font-family="Arial" font-size="6" fill="currentColor">A</text>
@@ -169,15 +170,15 @@
         <circle cx="4.5" cy="4.5" r="1.5"/>
       </svg>
     </button>
-    <button id="editorNone" class="editor-button" title="Disable Editing">✕</button>
+    <button id="editorNone" class="editor-button" title="禁用编辑">✕</button>
     <div class="toolbar-separator"></div>
     
     <div class="zoom-controls">
-      <button id="zoomOut" title="Zoom Out">−</button>
+      <button id="zoomOut" title="缩小">−</button>
       <select id="scaleSelect">
-        <option value="auto">Auto</option>
-        <option value="page-fit">Fit Page</option>
-        <option value="page-width">Fit Width</option>
+        <option value="auto">自动</option>
+        <option value="page-fit">适应页面</option>
+        <option value="page-width">适应宽度</option>
         <option value="0.5">50%</option>
         <option value="0.75">75%</option>
         <option value="1" selected>100%</option>
@@ -185,7 +186,7 @@
         <option value="1.5">150%</option>
         <option value="2">200%</option>
       </select>
-      <button id="zoomIn" title="Zoom In">+</button>
+      <button id="zoomIn" title="放大">+</button>
     </div>
   </div>
   
