@@ -77,17 +77,17 @@ jobs:
             cd /home/ubuntu/
             
             # 登录 GitHub 镜像库 (如果是私有库则必须登录才能 Pull)
-            echo $GH_TOKEN | docker login ghcr.io -u $USERNAME --password-stdin
+            echo $GH_TOKEN | sudo docker login ghcr.io -u $USERNAME --password-stdin
             
             # 下载(拉取)最新编译的镜像
-            docker pull $IMAGE
+            sudo docker pull $IMAGE
             
             # 停止并清理掉正在运行的旧容器
-            docker stop pdfcraft || true
-            docker rm pdfcraft || true
+            sudo docker stop pdfcraft || true
+            sudo docker rm pdfcraft || true
             
             # 运行新容器，暴露在 8080 端口
-            docker run -d -p 8080:80 --name pdfcraft --restart always $IMAGE
+            sudo docker run -d -p 8080:80 --name pdfcraft --restart always $IMAGE
             
             # 清除旧版本的悬空镜像，释放服务器磁盘空间
-            docker image prune -f
+            sudo docker image prune -f
