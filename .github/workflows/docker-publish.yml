@@ -7,14 +7,6 @@
 name: Docker Build & Publish
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*.*.*'
-  pull_request:
-    branches:
-      - main
   # Allow manual trigger
   workflow_dispatch:
 
