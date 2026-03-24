@@ -62,6 +62,25 @@ jobs:
         run: |
           echo "IMAGE_NAME_LOWER=$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
+      - name: Get GitHub Runner IP
+        id: ip
+        run: echo "RUNNER_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
+      - name: Setup Tencent Cloud CLI
+        run: |
+          pipx install tccli
+          tccli configure set secretId ${{ secrets.TENCENT_SECRET_ID }}
+          tccli configure set secretKey ${{ secrets.TENCENT_SECRET_KEY }}
+          tccli configure set region ${{ secrets.TENCENT_REGION }}
+
+      - name: Add IP to Tencent Cloud Security Group
+        run: |
+          # 动态拼接 JSON 参数
+          FIREWALL_RULES='[{"Protocol":"TCP","Port":"22","CidrBlock":"'$RUNNER_IP'/32","Action":"ACCEPT","FirewallRuleDescription":"GithubActions"}]'
+          tccli lighthouse CreateFirewallRules \
+            --InstanceId ${{ secrets.TENCENT_INSTANCE_ID }} \
+            --FirewallRules "$FIREWALL_RULES"
+
       - name: Deploy to Tencent Cloud via SSH
         uses: appleboy/ssh-action@v1.0.3
         env:
@@ -91,3 +110,11 @@ jobs:
             
             # 清除旧版本的悬空镜像，释放服务器磁盘空间
             sudo docker image prune -f
+
+      - name: Remove IP from Tencent Cloud Security Group
+        if: always()  # 重要：无论前面的步骤成功还是失败，必定会执行此步来移除白名单
+        run: |
+          FIREWALL_RULES='[{"Protocol":"TCP","Port":"22","CidrBlock":"'$RUNNER_IP'/32","Action":"ACCEPT","FirewallRuleDescription":"GithubActions"}]'
+          tccli lighthouse DeleteFirewallRules \
+            --InstanceId ${{ secrets.TENCENT_INSTANCE_ID }} \
+            --FirewallRules "$FIREWALL_RULES"
