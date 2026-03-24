@@ -69,16 +69,16 @@ jobs:
       - name: Setup Tencent Cloud CLI
         run: |
           pipx install tccli
-          tccli configure set secretId ${{ secrets.TENCENT_SECRET_ID }}
-          tccli configure set secretKey ${{ secrets.TENCENT_SECRET_KEY }}
-          tccli configure set region ${{ secrets.TENCENT_REGION }}
+          tccli configure set secretId "${{ secrets.TENCENT_SECRET_ID }}"
+          tccli configure set secretKey "${{ secrets.TENCENT_SECRET_KEY }}"
+          tccli configure set region "${{ secrets.TENCENT_REGION }}"
 
       - name: Add IP to Tencent Cloud Security Group
         run: |
           # 动态拼接 JSON 参数
           FIREWALL_RULES='[{"Protocol":"TCP","Port":"22","CidrBlock":"'$RUNNER_IP'/32","Action":"ACCEPT","FirewallRuleDescription":"GithubActions"}]'
           tccli lighthouse CreateFirewallRules \
-            --InstanceId ${{ secrets.TENCENT_INSTANCE_ID }} \
+            --InstanceId "${{ secrets.TENCENT_INSTANCE_ID }}" \
             --FirewallRules "$FIREWALL_RULES"
 
       - name: Deploy to Tencent Cloud via SSH
@@ -116,5 +116,5 @@ jobs:
         run: |
           FIREWALL_RULES='[{"Protocol":"TCP","Port":"22","CidrBlock":"'$RUNNER_IP'/32","Action":"ACCEPT","FirewallRuleDescription":"GithubActions"}]'
           tccli lighthouse DeleteFirewallRules \
-            --InstanceId ${{ secrets.TENCENT_INSTANCE_ID }} \
+            --InstanceId "${{ secrets.TENCENT_INSTANCE_ID }}" \
             --FirewallRules "$FIREWALL_RULES"
