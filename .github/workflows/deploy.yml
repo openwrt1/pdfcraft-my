@@ -1,6 +1,9 @@
 name: Deploy Docker to Tencent Cloud
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 env:
